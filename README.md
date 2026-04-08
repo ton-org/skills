@@ -14,7 +14,7 @@ A collection of packaged [agent skills](https://agentskills.io/) for the TON blo
 ### Claude Code
 
 ```bash
-npx skills add ton-connect/ton-agent-skills
+npx skills add ton-org/skills
 ```
 
 ### Manual

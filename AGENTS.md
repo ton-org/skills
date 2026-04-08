@@ -27,7 +27,7 @@ description: {What the skill does and when to use it. Imperative phrasing, keywo
 license: MIT
 compatibility: Requires @ton/mcp MCP server
 metadata:
-  author: ton-connect
+  author: ton-org
   version: "x.y.z"
 ---
 ```

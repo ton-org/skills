@@ -6,7 +6,7 @@ description: >
   agentic wallets, or resolving TON DNS domains, even if the user doesn't explicitly mention "TON" or "agentic wallet."
 license: MIT
 metadata:
-  author: ton-connect
+  author: ton-tech
   version: "0.1.0"
 ---
 
@@ -41,7 +41,7 @@ Self-custody wallets for autonomous agents on the TON blockchain. Provides MCP t
 ### Install Skills
 
 ```bash
-npx skills add ton-connect/ton-agent-skills
+npx skills add ton-org/skills
 ```
 
 ### MCP Server Configuration

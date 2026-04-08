@@ -9,7 +9,7 @@ description: >
 license: MIT
 compatibility: Requires the TON Docs MCP server (https://docs.ton.org/mcp)
 metadata:
-  author: ton-connect
+  author: ton-tech
   version: "0.2.0"
 ---
 
