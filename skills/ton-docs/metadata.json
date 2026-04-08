@@ -1,0 +1,10 @@
+{
+  "version": "0.1.0",
+  "organization": "TON Connect",
+  "date": "April 2026",
+  "abstract": "Agent skill for searching and referencing official TON blockchain documentation, including architecture, smart contract development, standards (TEPs), and SDK usage.",
+  "references": [
+    "https://docs.ton.org",
+    "https://github.com/ton-blockchain/TEPs"
+  ]
+}
