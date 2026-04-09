@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "organization": "TON Connect",
+  "date": "April 2026",
+  "abstract": "Agent skills for TON blockchain wallet operations including balance queries, transfers, token swaps, NFT management, and agentic wallet lifecycle. Built on @ton/mcp.",
+  "references": [
+    "https://ton.org",
+    "https://agents.ton.org",
+    "https://github.com/ton-connect/kit"
+  ]
+}
