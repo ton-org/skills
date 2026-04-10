@@ -1,48 +1,92 @@
 # TON Agent Skills
 
-A collection of packaged [agent skills](https://agentskills.io/) for the TON blockchain. Gives AI coding agents domain-specific knowledge and tools for wallet operations, token management, and TON documentation.
+A collection of packaged [agent skills](https://agentskills.io/) for the TON blockchain. They give AI coding agents domain-specific instructions and workflows for wallet operations, DeFi, NFTs, and official TON documentation.
 
-## Available Skills
+## Repository layout
+
+Skills are grouped under **top-level folders** (`wallets/`, `docs/`). Each skill is a **second-level** directory with its own `SKILL.md`:
+
+```text
+wallets/
+├── ton-balance/
+├── ton-cli/
+├── …
+docs/
+└── ton-docs/
+```
+
+Do not nest skills inside another skill directory; see [CONTRIBUTE.md](CONTRIBUTE.md). Optional `metadata.json` may live next to a group (e.g. `wallets/metadata.json`).
+
+## Available skills
+
+### `wallets/` — TON MCP & agentic wallets ([@ton/mcp](https://github.com/ton-connect/kit/tree/main/packages/mcp))
 
 | Skill | Description |
 | ----- | ----------- |
-| [agentic-wallets](skills/agentic-wallets/) | TON wallet operations — balances, transfers, swaps, NFTs, agentic wallet creation and management via [@ton/mcp](https://github.com/ton-connect/kit/tree/main/packages/mcp) |
-| [ton-docs](skills/ton-docs/) | Search and reference official TON blockchain documentation, standards (TEPs), and SDK guides |
+| [wallets/ton-balance](wallets/ton-balance/) | TON and jetton balances, token lists, transaction history, transaction status |
+| [wallets/ton-cli](wallets/ton-cli/) | Run TON MCP tools from the CLI via `npx @ton/mcp@alpha …` |
+| [wallets/ton-create-wallet](wallets/ton-create-wallet/) | Create and deploy a TON agentic wallet (operator keys, on-chain deploy) |
+| [wallets/ton-manage-wallets](wallets/ton-manage-wallets/) | Multiple wallets, import, switch accounts, rotate operator keys |
+| [wallets/ton-nfts](wallets/ton-nfts/) | List, inspect, and transfer NFTs on TON |
+| [wallets/ton-send](wallets/ton-send/) | Send TON and jettons to addresses or TON DNS (`.ton`, `.t.me`) |
+| [wallets/ton-swap](wallets/ton-swap/) | Swap and trade jettons on TON DEX (e.g. Omniston) |
+| [wallets/ton-xstocks](wallets/ton-xstocks/) | Buy and sell Backed xStocks (tokenized equities) on TON |
+
+### `docs/` — documentation & standards
+
+| Skill | Description |
+| ----- | ----------- |
+| [docs/ton-docs](docs/ton-docs/) | Official TON documentation, TEPs, and SDK topics via the [TON Docs MCP](https://docs.ton.org/mcp) server |
 
 ## Installation
 
-### Claude Code
+### Skills CLI
+
+Install from this repository (pick agents and skills as needed):
 
 ```bash
-npx skills add ton-org/skills
+npx skills add ton-org/skills --list
+
+# Examples: install everything, or only selected skills
+npx skills add ton-org/skills --skill '*'
+npx skills add ton-org/skills --skill ton-docs --skill ton-send
+```
+
+For a **local clone**, point at the repo root or a group folder; nested skills are only all discovered if you use full depth (see [CONTRIBUTE.md](CONTRIBUTE.md)):
+
+```bash
+npx skills add ./wallets
+npx skills add ./docs
 ```
 
 ### Manual
 
-Copy the desired skill directory into your agent's skills folder:
+Copy the skill directory you need into your agent’s skills folder (paths shown in the table above), for example:
 
 ```bash
-cp -r skills/agentic-wallets ~/.claude/skills/
-cp -r skills/ton-docs ~/.claude/skills/
+cp -r wallets/ton-send ~/.claude/skills/
+cp -r docs/ton-docs ~/.claude/skills/
 ```
 
-Or add a SKILL.md to your project knowledge on claude.ai.
+## Skill format
 
-## Skill Structure
+Each skill follows the [Agent Skills](https://agentskills.io/) layout. Inside `<group>/<skill-name>/`:
 
-Each skill follows the [Agent Skills](https://agentskills.io/) format:
-
+```text
+<group>/<skill-name>/
+├── SKILL.md          # Required: frontmatter (name, description, …) + instructions
+├── metadata.json     # Optional: version, org, references (group-level file is optional)
+├── scripts/          # Optional
+├── references/       # Optional
+└── assets/           # Optional
 ```
-skills/{skill-name}/
-├── SKILL.md          # Agent instructions (frontmatter + markdown)
-├── metadata.json     # Skill metadata (version, org, references)
-└── {sub-skill}/      # Optional sub-skills
-    └── SKILL.md
-```
+
+Authoring rules and quality checklist: [AGENTS.md](AGENTS.md).
 
 ## Contributing
 
-See [AGENTS.md](AGENTS.md) for guidelines on creating and modifying skills.
+- Layout and nesting: [CONTRIBUTE.md](CONTRIBUTE.md)
+- Writing and maintaining skills: [AGENTS.md](AGENTS.md)
 
 ## License
 
