@@ -7,7 +7,7 @@ Guidelines for creating and maintaining skills in this repository. Based on the 
 A skill is a directory containing, at minimum, a `SKILL.md` file:
 
 ```
-skills/{skill-name}/
+{skill-name}/
 ├── SKILL.md          # Required: metadata + instructions
 ├── metadata.json     # Optional: version, organization, references
 ├── scripts/          # Optional: executable code
