@@ -2,19 +2,37 @@
 
 Guidelines for creating and maintaining skills in this repository. Based on the [Agent Skills specification](https://agentskills.io/specification) and [best practices](https://agentskills.io/skill-creation/best-practices).
 
+For a map of published skills and install commands, see [README.md](README.md). For **where** skills may live in this repo (group folders, second level, no nesting), see [CONTRIBUTE.md](CONTRIBUTE.md).
+
+## Repository layout
+
+In this repository, every installable skill lives **two levels below the root**:
+
+```text
+<group>/<skill-name>/
+```
+
+- **`<group>`** — a top-level folder that groups related skills (e.g. `wallets` for [@ton/mcp](https://github.com/ton-connect/kit/tree/main/packages/mcp) wallet workflows, `docs` for documentation-oriented skills). It is not a skill by itself.
+- **`<skill-name>`** — the skill directory; must contain `SKILL.md`. The directory name must match the `name` field in frontmatter (`kebab-case`).
+
+Optional **`metadata.json`** may exist at the **group** level (e.g. `wallets/metadata.json`) for shared metadata; per-skill extras stay inside `<skill-name>/`.
+
+**Do not** place one skill inside another skill’s directory (e.g. `wallets/ton-send/other-skill/SKILL.md`). Tools such as `npx skills add` will not discover nested skills by default. If you need another skill, add a **sibling** directory at `<group>/<new-skill-name>/`.
+
 ## Skill Structure
 
 A skill is a directory containing, at minimum, a `SKILL.md` file:
 
 ```
-{skill-name}/
+<group>/<skill-name>/
 ├── SKILL.md          # Required: metadata + instructions
-├── metadata.json     # Optional: version, organization, references
+├── metadata.json     # Optional: version, organization, references (per-skill)
 ├── scripts/          # Optional: executable code
 ├── references/       # Optional: documentation
-├── assets/           # Optional: templates, resources
-└── {sub-skill}/      # Optional: sub-skills with their own SKILL.md
+└── assets/           # Optional: templates, resources
 ```
+
+Use **`references/`**, **`scripts/`**, and **`assets/`** for progressive disclosure. Do not add a second full skill (another `SKILL.md`) nested under the same `<skill-name>` folder.
 
 ## SKILL.md Format
 
@@ -32,9 +50,11 @@ metadata:
 ---
 ```
 
+On disk the skill lives at paths like `wallets/ton-balance/` or `docs/ton-docs/`; the `name` field must match the **skill** directory (`ton-balance`, `ton-docs`), not the group folder.
+
 | Field | Required | Constraints |
 | ----- | -------- | ----------- |
-| `name` | Yes | Max 64 chars. Lowercase letters, numbers, hyphens only. Must match parent directory name. No leading/trailing/consecutive hyphens. |
+| `name` | Yes | Max 64 chars. Lowercase letters, numbers, hyphens only. Must match the **skill** directory name (`<skill-name>` in `<group>/<skill-name>/`). No leading/trailing/consecutive hyphens. |
 | `description` | Yes | Max 1024 chars. Non-empty. Describes what the skill does and when to use it. |
 | `license` | No | License name or reference to bundled file. |
 | `compatibility` | No | Max 500 chars. Environment requirements (intended product, system packages, network access, etc.). |
@@ -137,7 +157,7 @@ To test triggering systematically:
 
 ## Naming Conventions
 
-- Skill directories: `kebab-case` (e.g., `ton-balance`, `agentic-wallets`)
+- Skill directories (the `<skill-name>` segment): `kebab-case` (e.g., `ton-balance`, `ton-send`)
 - Prefix TON-specific skills with `ton-`
 - Name must match the parent directory name exactly
 - No uppercase, no consecutive hyphens, no leading/trailing hyphens
@@ -171,7 +191,7 @@ Skills use three layers of context loading:
 
 1. **Metadata (~100 tokens):** `name` and `description` are loaded at startup for all skills
 2. **Instructions (< 5000 tokens recommended):** Full `SKILL.md` body is loaded when the skill is activated
-3. **Resources (as needed):** Files in `scripts/`, `references/`, `assets/`, or sub-skills are loaded only when required
+3. **Resources (as needed):** Files in `scripts/`, `references/`, and `assets/` are loaded only when required
 
 Keep `SKILL.md` under **500 lines**. Move detailed reference material to separate files.
 
@@ -190,15 +210,19 @@ Call `get_balance` to check TON balance.
 **Transaction history**: See [transactions.md](references/transactions.md)
 ````
 
-**Pattern 2: Domain-specific organization**
+**Pattern 2: Domain-specific organization (this repo)**
 
 ```
-agentic-wallets/
-├── SKILL.md (overview and navigation)
+wallets/
 ├── ton-balance/SKILL.md
 ├── ton-send/SKILL.md
-└── ton-swap/SKILL.md
+├── ton-swap/SKILL.md
+└── …
+docs/
+└── ton-docs/SKILL.md
 ```
+
+Each row is a separate skill at `<group>/<skill-name>/`. There is no umbrella `wallets/SKILL.md` that wraps the others.
 
 **Pattern 3: Conditional details**
 
@@ -207,8 +231,10 @@ agentic-wallets/
 
 For simple TON transfers → use `send_ton`
 
-**For jetton transfers**: See [ton-send/SKILL.md](ton-send/SKILL.md)
-**For swaps**: See [ton-swap/SKILL.md](ton-swap/SKILL.md)
+**For jetton transfers**: See the ton-send skill (`wallets/ton-send/` in this repo)
+**For swaps**: See the ton-swap skill (`wallets/ton-swap/`)
+
+From inside one skill’s `SKILL.md`, link to sibling reference files with paths relative to that skill root, e.g. [swap-notes.md](references/swap-notes.md). Cross-skill pointers are prose or repo paths — avoid deep chains of skill-to-skill file links.
 ```
 
 ### File References
@@ -525,6 +551,7 @@ Stop when feedback is consistently empty or you're no longer seeing meaningful i
 
 ## Anti-Patterns to Avoid
 
+- **Nested skill directories:** Do not put `<group>/<skill-a>/<skill-b>/SKILL.md` — use `<group>/<skill-b>/SKILL.md` instead (see [CONTRIBUTE.md](CONTRIBUTE.md))
 - **Windows-style paths:** Always use forward slashes (`references/guide.md`, not `references\guide.md`)
 - **Vague descriptions:** "Helps with TON" tells the agent nothing
 - **Over-explaining basics:** Don't explain what blockchain is or how wallets work
@@ -539,8 +566,13 @@ Stop when feedback is consistently empty or you're no longer seeing meaningful i
 
 ## Checklist for New Skills
 
+### Repository layout
+- [ ] Skill path is `<group>/<skill-name>/SKILL.md` (second level under repo root; see [CONTRIBUTE.md](CONTRIBUTE.md))
+- [ ] `name` in frontmatter matches the **skill** folder name, not the group folder
+- [ ] No extra `SKILL.md` nested under another skill’s directory
+
 ### Core Quality
-- [ ] `name` matches directory name, is kebab-case, max 64 chars
+- [ ] `name` matches the **skill** directory (`<skill-name>`), is kebab-case, max 64 chars
 - [ ] `description` uses imperative phrasing, is specific, includes trigger keywords, max 1024 chars
 - [ ] SKILL.md body is under 500 lines / ~5000 tokens
 - [ ] Additional details are in separate files (if needed)
