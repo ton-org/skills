@@ -32,6 +32,10 @@ Swap tokens on TON via DEX aggregator. Two-step flow: get a quote, confirm with 
 ## Notes
 
 - Always confirm the swap with the user before executing; prefer the host client's structured confirmation UI when available, otherwise accept natural-language yes/no and do not require a fixed confirmation phrase
+- **`messages` in `emulate_transaction` and `send_raw_transaction` must be a native JSON array** — pass the array object directly, never as a JSON string; passing a string causes `MCP error -32602`
+- **`slippageBps`** is typed as `number` (integer) — passing a string causes a schema validation error
+- **Quotes expire** (~1 minute) — if the user takes time to confirm, re-fetch the quote before calling `send_raw_transaction`
+- **"quoteUpdated without ack"** (transient Omniston WebSocket error) — retry `get_swap_quote` immediately; it resolves on the first retry
 - The quote returns transaction messages ready for `send_raw_transaction`
 - After execution, poll `get_transaction_status` by default. User can specify whether to check status.
 - If no wallet is configured, use the `ton-create-wallet` skill first

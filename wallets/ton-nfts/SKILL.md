@@ -37,5 +37,6 @@ View and transfer NFTs on the TON blockchain.
 ## Notes
 
 - Use `emulate_transaction` to dry-run any transaction before sending — it returns expected balance changes, fees, and high-level actions so you can verify the outcome
+- **`messages` in `emulate_transaction` and `send_raw_transaction` must be a native JSON array** — pass the array object directly, never as a JSON string; passing a string causes `MCP error -32602`
 - Always confirm with the user before transferring an NFT; prefer the host client's structured confirmation UI when available, otherwise accept natural-language yes/no and do not require a fixed confirmation phrase
 - If no wallet is configured, use the `ton-create-wallet` skill first

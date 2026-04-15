@@ -46,7 +46,7 @@ Manage the local wallet registry and perform advanced agentic wallet operations 
 1. Call `agentic_rotate_operator_key` — generates a new key pair and returns a dashboard URL for the user to apply the change on-chain
 2. If local browser or shell tools are available, open the dashboard URL yourself; only send the raw link when automatic opening is unavailable or fails
 3. Ask the user only to approve the on-chain key change in their wallet; do not require them to re-paste the URL or type a fixed confirmation phrase
-4. Call `agentic_complete_rotate_operator_key` with the `rotationId`; if the chain state has not updated yet, wait briefly and retry instead of forcing extra user input
+4. Call `agentic_complete_rotate_operator_key` with the `rotationId`; in one-shot CLI mode the callback never arrives — do not poll, ask the user to confirm once they've approved on-chain, then call complete immediately; if the chain state has not updated yet, wait briefly and retry
 
 ## Notes
 

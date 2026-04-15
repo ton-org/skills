@@ -53,9 +53,9 @@ Amounts for `get_swap_quote` are **human-readable** strings (respect jetton deci
 | `get_swap_quote` | fromToken | `--fromToken` (use `"TON"` for native TON, jetton master address for tokens) |
 | `get_swap_quote` | toToken | `--toToken` |
 | `get_swap_quote` | amount | `--amount` (human-readable) |
-| `get_swap_quote` | slippageBps | `--slippageBps` (default 100 = 1%) |
-| `emulate_transaction` | messages | `--messages` (JSON array from quote's `transaction.messages`) |
-| `send_raw_transaction` | messages | `--messages` (same JSON array) |
+| `get_swap_quote` | slippageBps | `--slippageBps` (integer, default 100 = 1%; passing a string causes a validation error) |
+| `emulate_transaction` | messages | `--messages` (native JSON array from quote's `transaction.messages` — not a string) |
+| `send_raw_transaction` | messages | `--messages` (same native JSON array — not a string) |
 | `get_transaction_status` | normalizedHash | `--normalizedHash` |
 
 ## Pre-fund USDT (auto, when needed)
@@ -101,7 +101,7 @@ Before any xStock trade, check the user's USDT balance:
 ## Omniston quirks
 
 - **"No quote available"** — no route at that size / time. Retry after a short wait, or adjust amount / slippage slightly. Do **not** switch to TON pairing; it won't help.
-- Occasional WebSocket errors (e.g. quote ack) — **retry** `get_swap_quote`.
+- **"quoteUpdated without ack"** (WebSocket ack timeout) — transient; retry `get_swap_quote` immediately.
 - Quotes **expire**; if the user waited before confirming, fetch a fresh quote before executing.
 
 ## Relations
