@@ -13,8 +13,6 @@ Always reinstall skills from this local repo before running tests. This ensures 
 npx skills add . --skill '*'
 ```
 
-Verify the installed versions match this repo by checking `skills-lock.json` — every entry should have `"sourceType": "local"` pointing to this directory.
-
 ## Permissions
 
 All read-only and emulation operations are pre-approved. For write operations:
