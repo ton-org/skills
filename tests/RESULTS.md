@@ -4,10 +4,10 @@
 
 | Run | PR / Branch | Date | Errors | ΔErrors | Actions | ΔActions | Context | ΔContext |
 |-----|-------------|------|--------|---------|---------|----------|---------|----------|
-| general: add tests (#30) | 30-general-add-tests | 2026-04-16 | 14 | — | 62 | — | ~55 k tok | — |
+| general: add tests (#31) | 30-general-add-tests | 2026-04-16 | 14 | — | 62 | — | ~55 k tok | — |
 
 
-## general: add tests (#30)
+## general: add tests (#31)
 
 ### GROUP 1: ton-balance
 
