@@ -2,7 +2,7 @@
 
 Guidelines for creating and maintaining skills in this repository. Based on the [Agent Skills specification](https://agentskills.io/specification) and [best practices](https://agentskills.io/skill-creation/best-practices).
 
-For a map of published skills and install commands, see [README.md](README.md). For **where** skills may live in this repo (group folders, second level, no nesting), see [CONTRIBUTE.md](CONTRIBUTE.md).
+For a map of published skills and install commands, see [README.md](README.md). For **where** skills may live in this repo (group folders, second level, no nesting), see [CONTRIBUTE.md](CONTRIBUTE.md). For **repository-wide end-to-end test runs** (prompt matrix, results tables), see [tests/TESTING.md](tests/TESTING.md) and [tests/RESULTS.md](tests/RESULTS.md).
 
 ## Repository layout
 
@@ -491,6 +491,10 @@ Error: --format must be one of: json, csv, table.
 ---
 
 ## Evaluating and Iterating on Skills
+
+### Repository-wide E2E runs
+
+The [tests/TESTING.md](tests/TESTING.md) plan covers all skills in a single autonomous pass (groups, permissions, `RESULTS.md` metrics). That complements the per-skill `evals/evals.json` pattern below; use whichever fits the change (narrow skill tweak vs. full regression sweep).
 
 ### Build Evaluations First
 
