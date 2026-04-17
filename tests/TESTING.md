@@ -90,7 +90,7 @@ When a new issue is found, append to `ISSUES.md` under the relevant section:
 - [ ] C3 — "Show my recent transactions via CLI"
 
 ### GROUP 9: cross-skill
-*These cases intentionally span multiple skills. Note which skills were invoked in the Notes column of RESULTS.md.*
+w*These cases intentionally span multiple skills. Note which skills were invoked in `ISSUES.md` if relevant.*
 
 - [ ] M1 — "What's my total portfolio value in USD?" *(ton-balance + ton-xstocks: balance + current token prices)*
 - [ ] M2 — "Buy NVDAx worth 1 USDT, paying with TON" *(ton-balance + ton-swap + ton-xstocks)*
@@ -142,10 +142,10 @@ After each group:
 After all groups are done:
 4. Compute Δ columns for errors, actions, and context vs the previous run.
 5. Add a new row to the **Summary Table** in `RESULTS.md`.
-6. Mark deviations > ±5 % in the Notes column for further review.
+6. If any metric differs from the previous run by more than ±5 %, note it in `ISSUES.md` or a short comment in the PR for further review.
 
 ### RESULTS.md format
 
-The **Run** identifier is the PR title and number, e.g. `feat: add tests (#15)`. If the current HEAD is not tied to a PR, use the branch name instead.
+The **PR** column is the PR title and number, e.g. `#15`. If the current HEAD is not tied to a PR, use the branch name in that column instead.
 
 Then add or update the entry in `RESULTS.md` following the template in that file.
