@@ -4,6 +4,8 @@
 
 Run all skill test cases end-to-end autonomously, discovering and recording issues in `ISSUES.md` without waiting for user approval on each step.
 
+`ISSUES.md` is a **temporary** working file for a given run or session: it is not a permanent artifact in the repo. After triage, move findings to your issue tracker or PR and clear or remove the file.
+
 ## Setup — reinstall skills before each run
 
 Always reinstall skills from this local repo before running tests. This ensures you are testing the current source, not any globally cached version.
@@ -90,7 +92,7 @@ When a new issue is found, append to `ISSUES.md` under the relevant section:
 - [ ] C3 — "Show my recent transactions via CLI"
 
 ### GROUP 9: cross-skill
-w*These cases intentionally span multiple skills. Note which skills were invoked in `ISSUES.md` if relevant.*
+*These cases intentionally span multiple skills. Note which skills were invoked in `ISSUES.md` if relevant.*
 
 - [ ] M1 — "What's my total portfolio value in USD?" *(ton-balance + ton-xstocks: balance + current token prices)*
 - [ ] M2 — "Buy NVDAx worth 1 USDT, paying with TON" *(ton-balance + ton-swap + ton-xstocks)*
