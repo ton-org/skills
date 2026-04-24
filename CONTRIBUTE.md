@@ -21,3 +21,7 @@ Examples:
 - **Do not rely on a single root-level `SKILL.md`** as the only way to ship multiple skills. For multi-skill packages, use separate second-level directories under the appropriate group.
 
 Keeping skills at the second level makes discovery predictable for install tooling and keeps navigation in the repo consistent.
+
+## Testing
+
+Repository-wide end-to-end test prompts, rules, and metrics live under [tests/TESTING.md](tests/TESTING.md). Aggregated outcomes are logged in [tests/RESULTS.md](tests/RESULTS.md). These files are **not** skills; they document how maintainers run and record autonomous agent tests. For small per-skill eval JSON examples, see [AGENTS.md](AGENTS.md#evaluating-and-iterating-on-skills).

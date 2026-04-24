@@ -17,6 +17,8 @@ docs/
 
 Do not nest skills inside another skill directory; see [CONTRIBUTE.md](CONTRIBUTE.md). Optional `metadata.json` may live next to a group (e.g. `wallets/metadata.json`).
 
+The **`tests/`** folder at the repo root is not an installable skill; it holds the [autonomous testing plan](tests/TESTING.md) and [aggregated run results](tests/RESULTS.md).
+
 ## Available skills
 
 ### `wallets/` — TON MCP & agentic wallets ([@ton/mcp](https://github.com/ton-connect/kit/tree/main/packages/mcp))
@@ -87,6 +89,18 @@ Authoring rules and quality checklist: [AGENTS.md](AGENTS.md).
 
 - Layout and nesting: [CONTRIBUTE.md](CONTRIBUTE.md)
 - Writing and maintaining skills: [AGENTS.md](AGENTS.md)
+
+## Testing
+
+End-to-end autonomous runs across wallet and docs skills are described in [tests/TESTING.md](tests/TESTING.md) (prompts, execution rules, metrics, and how to record issues). Summary tables and per-run deltas are in [tests/RESULTS.md](tests/RESULTS.md).
+
+Before a full run, reinstall skills from this checkout so the agent uses the current sources (not a stale global cache):
+
+```bash
+npx skills add . --skill '*'
+```
+
+Per-skill evaluation fixtures (`evals/evals.json`) and iteration guidance: [AGENTS.md](AGENTS.md#evaluating-and-iterating-on-skills).
 
 ## License
 
