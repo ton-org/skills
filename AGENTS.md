@@ -2,7 +2,7 @@
 
 Guidelines for creating and maintaining skills in this repository. Based on the [Agent Skills specification](https://agentskills.io/specification) and [best practices](https://agentskills.io/skill-creation/best-practices).
 
-For a map of published skills and install commands, see [README.md](README.md). For **where** skills may live in this repo (group folders, second level, no nesting), see [CONTRIBUTE.md](CONTRIBUTE.md). For **repository-wide end-to-end test runs** (prompt matrix, results tables), see [tests/TESTING.md](tests/TESTING.md) and [tests/RESULTS.md](tests/RESULTS.md).
+For a map of published skills and install commands, see [README.md](README.md). For **where** skills may live in this repo (group folders, second level, no nesting) and what to update when adding a new skill, see [CONTRIBUTE.md](CONTRIBUTE.md). For **repository-wide end-to-end evaluations** via the skill-creator plugin (setup, commands, eval format), see [tests/TESTING.md](tests/TESTING.md); aggregated benchmark metrics live in [tests/RESULTS.md](tests/RESULTS.md) and the eval definitions in [tests/evals/evals.json](tests/evals/evals.json).
 
 ## Repository layout
 
@@ -494,44 +494,45 @@ Error: --format must be one of: json, csv, table.
 
 ### Repository-wide E2E runs
 
-The [tests/TESTING.md](tests/TESTING.md) plan covers all skills in a single autonomous pass (groups, permissions, `RESULTS.md` metrics). That complements the per-skill `evals/evals.json` pattern below; use whichever fits the change (narrow skill tweak vs. full regression sweep).
+End-to-end evaluations run via the [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) plugin against [tests/evals/evals.json](tests/evals/evals.json); see [tests/TESTING.md](tests/TESTING.md) for setup and commands. Benchmark metrics are committed to [tests/RESULTS.md](tests/RESULTS.md) (date, model, per-eval times/tokens, aggregate stats with Wins / Losses / Ties). The methodology below complements that flow — use it when designing or tightening eval cases for a single skill.
 
 ### Build Evaluations First
 
 Create evaluations BEFORE writing extensive documentation. This ensures your skill solves real problems rather than documenting imagined ones.
 
 1. **Identify gaps:** Run the agent on representative tasks without a skill. Document specific failures.
-2. **Create test cases:** Build 2-3 scenarios that test these gaps. Each has a prompt, expected output, optional input files, and assertions.
+2. **Create test cases:** Build 2-3 scenarios that test these gaps. Each has a prompt, expected output, optional input files, and expectations.
 3. **Establish baseline:** Measure performance without the skill.
 4. **Write minimal instructions:** Create just enough content to address the gaps.
 5. **Iterate:** Execute evaluations, compare against baseline, and refine.
 
 ### Test Case Structure
 
-Store test cases in `evals/evals.json`:
+Store test cases in `tests/evals/evals.json` (single file shared by all skills in the repo, partitioned by `group`):
 
 ```json
 {
-  "skill_name": "ton-balance",
+  "skill_name": "ton",
   "evals": [
     {
       "id": 1,
+      "group": "ton-balance",
       "prompt": "What's my TON balance and do I have any USDT?",
       "expected_output": "TON balance and USDT jetton balance displayed.",
-      "assertions": [
-        "Called get_balance to check TON balance",
-        "Called get_known_jettons or get_jetton_balance for USDT",
-        "Displayed both balances in human-readable format"
+      "expectations": [
+        "Calls get_balance to check TON balance",
+        "Calls get_known_jettons or get_jetton_balance for USDT",
+        "Displays both balances in human-readable format"
       ]
     }
   ]
 }
 ```
 
-### Writing Good Assertions
+### Writing Good Expectations
 
 - **Good:** "The output file is valid JSON" — programmatically verifiable
-- **Good:** "Called get_swap_quote before send_raw_transaction" — observable
+- **Good:** "Calls get_swap_quote before send_raw_transaction" — observable
 - **Weak:** "The output is good" — too vague to grade
 - **Weak:** "Uses exactly the phrase 'Balance: X TON'" — too brittle
 

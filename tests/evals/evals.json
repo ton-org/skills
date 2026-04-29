@@ -1,0 +1,328 @@
+{
+  "skill_name": "ton",
+  "evals": [
+    {
+      "id": 1,
+      "group": "ton-balance",
+      "prompt": "How much TON do I have?",
+      "expected_output": "Shows the user's TON balance as a numeric amount",
+      "expectations": [
+        "Calls get_balance or get_balance_by_address",
+        "Response contains a numeric TON amount",
+        "Does not hallucinate a wallet address"
+      ]
+    },
+    {
+      "id": 2,
+      "group": "ton-balance",
+      "prompt": "Show me all the tokens in my wallet",
+      "expected_output": "Lists all jetton balances in the wallet",
+      "expectations": [
+        "Calls get_jettons or get_jettons_by_address",
+        "Response lists token names and balances"
+      ]
+    },
+    {
+      "id": 3,
+      "group": "ton-balance",
+      "prompt": "What's my USDT balance?",
+      "expected_output": "Shows USDT balance specifically",
+      "expectations": [
+        "Calls get_jetton_balance or get_jettons",
+        "Response contains a numeric USDT amount"
+      ]
+    },
+    {
+      "id": 4,
+      "group": "ton-balance",
+      "prompt": "Show me my last 5 transactions",
+      "expected_output": "Lists recent transactions with details",
+      "expectations": [
+        "Calls get_transactions",
+        "Response shows transaction details"
+      ]
+    },
+    {
+      "id": 5,
+      "group": "ton-balance",
+      "prompt": "What is the status of my most recent transaction?",
+      "expected_output": "Shows status of the latest transaction",
+      "expectations": [
+        "Calls get_transactions or get_transaction_status",
+        "Response includes transaction status"
+      ]
+    },
+    {
+      "id": 6,
+      "group": "ton-manage-wallets",
+      "prompt": "List all my wallets",
+      "expected_output": "Lists all wallets with addresses",
+      "expectations": [
+        "Calls list_wallets",
+        "Response contains wallet addresses"
+      ]
+    },
+    {
+      "id": 7,
+      "group": "ton-manage-wallets",
+      "prompt": "Which wallet am I currently using?",
+      "expected_output": "Shows the active wallet",
+      "expectations": [
+        "Calls get_current_wallet or get_wallet",
+        "Response identifies the active wallet"
+      ]
+    },
+    {
+      "id": 8,
+      "group": "ton-manage-wallets",
+      "prompt": "Is my active wallet properly set up and valid?",
+      "expected_output": "Validates the active wallet",
+      "expectations": [
+        "Calls agentic_validate_wallet or get_wallet",
+        "Response confirms validity or reports issues"
+      ]
+    },
+    {
+      "id": 9,
+      "group": "ton-swap",
+      "prompt": "How much USDT would I get for 1 TON right now?",
+      "expected_output": "Shows a swap quote for TON to USDT",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Response contains a numeric USDT amount"
+      ]
+    },
+    {
+      "id": 10,
+      "group": "ton-swap",
+      "prompt": "Swap 0.5 TON to USDT",
+      "expected_output": "Executes or emulates a TON to USDT swap",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Calls send_raw_transaction or emulate_transaction",
+        "Response confirms the swap or shows emulation result"
+      ]
+    },
+    {
+      "id": 11,
+      "group": "ton-swap",
+      "prompt": "Swap USDT back to TON",
+      "expected_output": "Executes or emulates a USDT to TON swap",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Response shows swap result or quote"
+      ]
+    },
+    {
+      "id": 12,
+      "group": "ton-swap",
+      "prompt": "Get me a quote for swapping an unknown token address",
+      "expected_output": "Handles the error gracefully",
+      "expectations": [
+        "Does not crash or hang",
+        "Response explains the token was not found or quote unavailable"
+      ]
+    },
+    {
+      "id": 13,
+      "group": "ton-xstocks",
+      "prompt": "How much is the NVDAx stock token worth in USDT?",
+      "expected_output": "Shows NVDAx price in USDT",
+      "expectations": [
+        "Calls get_swap_quote or get_jetton_info",
+        "Response contains a numeric price"
+      ]
+    },
+    {
+      "id": 14,
+      "group": "ton-xstocks",
+      "prompt": "Show me my NVDAx balance",
+      "expected_output": "Shows NVDAx token balance",
+      "expectations": [
+        "Calls get_jetton_balance or get_jettons",
+        "Response contains NVDAx amount"
+      ]
+    },
+    {
+      "id": 15,
+      "group": "ton-xstocks",
+      "prompt": "Buy a small amount of TSLAx",
+      "expected_output": "Attempts to buy TSLAx, possibly via two-step swap through USDT",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Response shows purchase result or explains the route"
+      ]
+    },
+    {
+      "id": 16,
+      "group": "ton-xstocks",
+      "prompt": "Sell my NVDAx",
+      "expected_output": "Attempts to sell NVDAx holdings",
+      "expectations": [
+        "Calls get_swap_quote or get_jetton_balance",
+        "Response shows sell result or quote"
+      ]
+    },
+    {
+      "id": 17,
+      "group": "ton-send",
+      "prompt": "What address does foundation.ton resolve to?",
+      "expected_output": "Resolves the .ton domain to an address",
+      "expectations": [
+        "Calls resolve_dns",
+        "Response contains a TON address"
+      ]
+    },
+    {
+      "id": 18,
+      "group": "ton-send",
+      "prompt": "Send 0.01 TON to my own address",
+      "expected_output": "Sends TON to the user's own wallet",
+      "expectations": [
+        "Calls send_ton or emulate_transaction",
+        "Response confirms the send or shows emulation"
+      ]
+    },
+    {
+      "id": 19,
+      "group": "ton-send",
+      "prompt": "Send a small amount of USDT to myself",
+      "expected_output": "Sends USDT jetton to the user's own wallet",
+      "expectations": [
+        "Calls send_jetton or emulate_transaction",
+        "Response confirms the send or shows emulation"
+      ]
+    },
+    {
+      "id": 20,
+      "group": "ton-nfts",
+      "prompt": "Do I own any NFTs?",
+      "expected_output": "Lists NFTs owned by the user",
+      "expectations": [
+        "Calls get_nfts or get_nfts_by_address",
+        "Response lists NFTs or says none found"
+      ]
+    },
+    {
+      "id": 21,
+      "group": "ton-nfts",
+      "prompt": "Show me details for a specific NFT",
+      "expected_output": "Shows details of an NFT",
+      "expectations": [
+        "Calls get_nft or get_nfts",
+        "Response contains NFT metadata"
+      ]
+    },
+    {
+      "id": 22,
+      "group": "ton-nfts",
+      "prompt": "What's new in the NFT feed right now?",
+      "expected_output": "Attempts to show NFT feed or explains limitation",
+      "expectations": [
+        "Does not crash or hang",
+        "Response addresses the request or explains no feed tool exists"
+      ]
+    },
+    {
+      "id": 23,
+      "group": "ton-docs",
+      "prompt": "How does jetton transfer work on TON?",
+      "expected_output": "Explains jetton transfer mechanics using documentation",
+      "expectations": [
+        "Calls search_ton_docs or query_docs_filesystem_ton_docs",
+        "Response explains jetton transfer with technical details"
+      ]
+    },
+    {
+      "id": 24,
+      "group": "ton-docs",
+      "prompt": "Explain the TON wallet contract standard",
+      "expected_output": "Explains wallet contract standards",
+      "expectations": [
+        "Calls search_ton_docs or query_docs_filesystem_ton_docs",
+        "Response covers wallet contract versioning or standards"
+      ]
+    },
+    {
+      "id": 25,
+      "group": "ton-docs",
+      "prompt": "What is the NFT standard on TON and how does ownership transfer?",
+      "expected_output": "Explains TON NFT standard and transfer mechanism",
+      "expectations": [
+        "Calls search_ton_docs or query_docs_filesystem_ton_docs",
+        "Response references TEP-62 or NFT standard details"
+      ]
+    },
+    {
+      "id": 26,
+      "group": "ton-cli",
+      "prompt": "Check my TON balance via CLI",
+      "expected_output": "Runs TON MCP CLI command to check balance",
+      "expectations": [
+        "Uses Bash to run npx @ton/mcp or calls get_balance",
+        "Response shows a TON balance"
+      ]
+    },
+    {
+      "id": 27,
+      "group": "ton-cli",
+      "prompt": "List my wallets via CLI",
+      "expected_output": "Runs TON MCP CLI command to list wallets",
+      "expectations": [
+        "Uses Bash to run npx @ton/mcp or calls list_wallets",
+        "Response shows wallet list"
+      ]
+    },
+    {
+      "id": 28,
+      "group": "ton-cli",
+      "prompt": "Show my recent transactions via CLI",
+      "expected_output": "Runs TON MCP CLI command to show transactions",
+      "expectations": [
+        "Uses Bash to run npx @ton/mcp or calls get_transactions",
+        "Response shows transaction list"
+      ]
+    },
+    {
+      "id": 29,
+      "group": "cross-skill",
+      "prompt": "What's my total portfolio value in USD?",
+      "expected_output": "Calculates total portfolio value across TON and tokens",
+      "expectations": [
+        "Calls get_balance and get_jettons",
+        "Response contains a total USD value"
+      ]
+    },
+    {
+      "id": 30,
+      "group": "cross-skill",
+      "prompt": "Buy NVDAx worth 1 USDT, paying with TON",
+      "expected_output": "Performs multi-step swap: TON -> USDT -> NVDAx",
+      "expectations": [
+        "Calls get_swap_quote at least once",
+        "Response shows purchase result or explains the multi-step route"
+      ]
+    },
+    {
+      "id": 31,
+      "group": "cross-skill",
+      "prompt": "How much TON do I need to buy 1 TSLAx at current prices?",
+      "expected_output": "Calculates TON cost for 1 TSLAx",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Response contains a numeric TON amount"
+      ]
+    },
+    {
+      "id": 32,
+      "group": "cross-skill",
+      "prompt": "Check my balance, then show me what NFTs I own and look one up on GetGems",
+      "expected_output": "Shows balance, lists NFTs, and looks up one on GetGems",
+      "expectations": [
+        "Calls get_balance or get_jettons",
+        "Calls get_nfts or get_nfts_by_address",
+        "Response covers balance and NFT information"
+      ]
+    }
+  ]
+}
