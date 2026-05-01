@@ -1,6 +1,6 @@
 # TON Agent Skills
 
-A collection of packaged [agent skills](https://agentskills.io/) for the TON blockchain. They give AI coding agents domain-specific instructions and workflows for wallet operations, DeFi, NFTs, and official TON documentation.
+A collection of packaged [agent skills](https://agentskills.io/) for the TON blockchain. They give AI coding agents domain-specific instructions and workflows for wallet operations, DeFi, NFTs, and official TON documentation. See [mcp.ton.org](https://mcp.ton.org) for an overview of TON MCP.
 
 ## Repository layout
 
