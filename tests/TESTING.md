@@ -1,91 +1,232 @@
 # Testing — TON Skills
 
-Evals run via the [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) plugin. It handles execution, grading, benchmarking, and an HTML viewer — we only maintain the eval definitions in [`tests/evals/evals.json`](evals/evals.json).
+## Quick start
 
-## Setup (one-time)
-
-1. Install [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
-
-```bash
-npm install -g @anthropic-ai/claude-code
-```
-
-2. Install the skill-creator plugin:
-
-```bash
-claude plugin install skill-creator
-```
-
-3. Clone this repo and install skills from the local source:
-
-```bash
-git clone https://github.com/ton-org/skills.git
-cd skills
-npx skills add . --skill '*'
-```
-
-## Running evals
-
-The skill-creator plugin reads evals from `./evals/evals.json` relative to its working directory. Run it from the `tests/` folder so that path resolves to `tests/evals/evals.json`:
+Open Claude Code **from the `tests/` directory** (not the repo root):
 
 ```bash
 cd tests
+claude
 ```
 
-Then in Claude Code:
+MCP servers (`ton-mcp`, `ton-docs`) are configured in `tests/.mcp.json` and will be picked up automatically. Eval files, workspace, and results all live here too.
+
+Run evals per skill:
 
 ```
-/skill-creator evaluate ton
+/skill-creator evaluate ton-balance
+/skill-creator evaluate ton-swap
+/skill-creator evaluate ton-send
+/skill-creator evaluate ton-nfts
+/skill-creator evaluate ton-docs
+/skill-creator evaluate ton-cli
+/skill-creator evaluate ton-xstocks
+/skill-creator evaluate ton-manage-wallets
+/skill-creator evaluate cross-skill
 ```
 
-This will:
-1. Read `tests/evals/evals.json`
-2. Run each eval **with** and **without** the skill (parallel subagents)
-3. Grade expectations → `grading.json` (pass/fail with evidence per assertion)
-4. Aggregate results → `benchmark.json` + `benchmark.md` (mean, stddev, delta)
-5. Open the HTML eval viewer for review
+Each command reads the corresponding `evals/<skill-name>.json`, runs evals with and without the skill, grades expectations, aggregates results, and opens the HTML viewer.
 
-### Benchmark mode (multiple runs)
-
-For statistical reliability, ask skill-creator to run a benchmark with multiple runs:
+To run **all skills at once**, ask Claude:
 
 ```
-/skill-creator benchmark ton --runs 3
+/skill-creator evaluate ton-*
 ```
 
-This runs each eval 3 times per configuration and produces summary stats with stddev.
+## Before running evals — preflight check
 
-### Comparing skill versions
+Before running any `/skill-creator evaluate` command, **always run a preflight check first**. This takes seconds and prevents wasting tokens on broken setups.
 
-After editing a skill, run:
+Run these MCP calls to verify the environment is working:
+
+1. **MCP connected?** — Call `mcp__ton-mcp__get_wallet`. If this fails, MCP is not connected. The user needs to restart Claude Code from `tests/` where `.mcp.json` is configured.
+
+2. **Wallet has funds?** — Call `mcp__ton-mcp__get_balance`. Must show >= 0.5 TON. If zero or error, the wallet is not set up.
+
+3. **Jettons available?** — Call `mcp__ton-mcp__get_jettons`. Should show USDT. Missing tokens will cause some evals to fail.
+
+4. **TON Docs MCP connected?** — Call `mcp__ton-docs__search_ton_docs` with a simple query like "jetton". If this fails, the ton-docs server is down or not connected.
+
+If any check fails, **stop and tell the user** what's wrong instead of launching dozens of agents that will all fail.
+
+## Eval files
+
+Each skill has its own eval file in `evals/`:
+
+| File | Skill | Evals | IDs |
+|------|-------|-------|-----|
+| `ton-balance.json` | ton-balance | 5 | 1-5 |
+| `ton-manage-wallets.json` | ton-manage-wallets | 3 | 6-8 |
+| `ton-swap.json` | ton-swap | 4 | 9-12 |
+| `ton-xstocks.json` | ton-xstocks | 4 | 13-16 |
+| `ton-send.json` | ton-send | 3 | 17-19 |
+| `ton-nfts.json` | ton-nfts | 3 | 20-22 |
+| `ton-docs.json` | ton-docs | 3 | 23-25 |
+| `ton-cli.json` | ton-cli | 3 | 26-28 |
+| `cross-skill.json` | cross-skill | 4 | 29-32 |
+
+`evals.json` is the combined file with all 32 evals (kept for backwards compatibility).
+
+## Skill paths
+
+| Skill | Path |
+|-------|------|
+| ton-balance | `wallets/ton-balance` |
+| ton-manage-wallets | `wallets/ton-manage-wallets` |
+| ton-swap | `wallets/ton-swap` |
+| ton-xstocks | `wallets/ton-xstocks` |
+| ton-send | `wallets/ton-send` |
+| ton-nfts | `wallets/ton-nfts` |
+| ton-cli | `wallets/ton-cli` |
+| ton-create-wallet | `wallets/ton-create-wallet` |
+| ton-docs | `docs/ton-docs` |
+
+## Prerequisites
+
+### Wallet
+
+Evals run against a **real wallet on mainnet**. The active wallet (`~/.config/ton/config.json`) must have:
+
+| Asset | Min amount | Used by skills |
+|-------|-----------|----------------|
+| TON | ≥ 0.5 | ton-balance, ton-swap, ton-send, cross-skill (gas) |
+| USDT | any > 0 | ton-swap (reverse), ton-send (jetton) |
+
+The wallet must be **agentic** with an `operator_private_key`. Without it, write operations (swaps, sends) will fail.
+
+### Bootstrap wallet
+
+If starting from a wallet with only TON (need ≥ 1 TON), just ask Claude:
 
 ```
-/skill-creator improve ton
+Swap 0.5 TON to USDT
 ```
 
-Skill-creator compares the new version against the previous best using blind A/B comparison and tracks version history.
+Or manually:
 
-## Recording results
+```bash
+npx @ton/mcp@alpha get_wallet
+npx @ton/mcp@alpha get_balance
 
-After a run, the plugin writes several temp files into `tests/` (its working directory): `grading.json`, `benchmark.json`, `benchmark.md`. These are gitignored — only the final metrics go into `RESULTS.md` so git history tracks skill progress over time.
+# TON → USDT
+npx @ton/mcp@alpha get_swap_quote --fromToken TON --toToken EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs --amount 0.5
+npx @ton/mcp@alpha send_raw_transaction --messages '<messages from quote>'
 
-`RESULTS.md` is a metrics-only file. It contains, per run, exactly:
+npx @ton/mcp@alpha get_balance
+npx @ton/mcp@alpha get_jettons
+```
 
-- Date heading and model
-- Per-eval summary table (eval, group, with-skill time/tokens, without-skill time/tokens, winner)
-- Aggregate stats table (avg time, avg tokens, avg tool calls — with delta — and winner breakdown: Skill / Baseline / Tie)
+**Key addresses:**
 
-Do **not** add prose, findings, assertion tables, raw grading JSON, or subagent traces to `RESULTS.md`. Anything narrative goes in the PR description or a separate notes file.
+| Token | Jetton master |
+|-------|--------------|
+| USDT | `EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs` |
 
-The goal: a compact metrics ledger where `git diff tests/RESULTS.md` makes regressions and improvements visible at a glance.
+### Software
 
-## Eval format
+```bash
+# 1. Claude Code
+npm install -g @anthropic-ai/claude-code
 
-Evals live in `tests/evals/evals.json`:
+# 2. skill-creator plugin
+claude plugin install skill-creator
+
+# 3. Clone and install skills
+git clone https://github.com/ton-org/skills.git
+cd skills
+npx skills add . --skill '*' -y
+
+# 4. Python 3.10+ (required for the eval viewer)
+brew install python@3.11
+```
+
+### MCP servers
+
+MCP servers are configured in **`tests/.mcp.json`** (not the repo root). Claude Code picks them up when launched from the `tests/` directory:
 
 ```json
 {
-  "skill_name": "ton",
+  "mcpServers": {
+    "ton-mcp": {
+      "command": "npx",
+      "args": ["-y", "@ton/mcp@alpha"]
+    },
+    "ton-docs": {
+      "type": "http",
+      "url": "https://docs.ton.org/mcp"
+    }
+  }
+}
+```
+
+Verify they're connected:
+
+```bash
+cd tests && claude mcp list
+# Should show ton-mcp and ton-docs
+```
+
+### Permissions
+
+Evals run via `claude -p` (non-interactive mode), so all tools must be **pre-approved** — there's no user to click "Allow". Add the following to `tests/.claude/settings.local.json` (create if it doesn't exist):
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "mcp__ton-mcp__*",
+      "mcp__ton-docs__*",
+      "Bash(npx @ton/mcp@alpha:*)",
+      "Bash(npx -y @ton/mcp@alpha:*)",
+      "Bash(curl:*)",
+      "WebFetch(*)",
+      "WebSearch(*)"
+    ]
+  }
+}
+```
+
+Without these, most evals will fail with "needs your approval" because:
+- `mcp__ton-mcp__*` / `mcp__ton-docs__*` — allow all MCP tool calls
+- `Bash(npx @ton/mcp@alpha:*)` — some skills route through CLI instead of MCP tools
+- `Bash(curl:*)` — xStocks evals fetch prices from the xStocks API
+- `WebFetch` / `WebSearch` — ton-docs evals may fetch documentation pages
+
+## Benchmark mode
+
+For statistical reliability, run multiple times:
+
+```
+/skill-creator benchmark ton-balance --runs 3
+```
+
+## Comparing skill versions
+
+After editing a skill:
+
+```
+/skill-creator improve ton-swap
+```
+
+Compares the current version against the previous best using blind A/B comparison.
+
+## Recording results
+
+The plugin writes temp files (`grading.json`, `benchmark.json`, `benchmark.md`) into `ton-workspace/`. These are gitignored.
+
+After a benchmark run, append a new dated section to `RESULTS.md` manually with:
+
+- Date heading and model
+- Per-eval table: eval, group, with-skill time/tokens, without-skill time/tokens, winner
+- Aggregate stats: avg time, avg total tokens, pass rate, winner breakdown (Wins / Losses / Ties)
+
+No prose, no assertion tables, no raw JSON in `RESULTS.md`.
+
+## Eval format
+
+```json
+{
+  "skill_name": "ton-balance",
   "evals": [
     {
       "id": 1,
@@ -102,12 +243,10 @@ Evals live in `tests/evals/evals.json`:
 }
 ```
 
-### Fields
-
 | Field | Required | Description |
 |---|---|---|
 | `id` | yes | Unique integer |
-| `group` | no | Skill group for organizing results (e.g. `ton-balance`) |
+| `group` | no | Skill group for organizing results |
 | `prompt` | yes | The user request to execute |
 | `expected_output` | yes | Human-readable description of success |
 | `expectations` | yes | List of verifiable assertions for the grader |
@@ -115,29 +254,25 @@ Evals live in `tests/evals/evals.json`:
 
 ### Writing good expectations
 
-- Be specific and verifiable: "Calls get_balance" not "Uses the right tool"
-- Use "or" for acceptable alternatives: "Calls get_nfts or get_nfts_by_address"
-- Include negative checks where relevant: "Does not send a real transaction"
-- Cover both the process (tool calls) and the result (response content)
+- Be specific: "Calls get_balance" not "Uses the right tool"
+- Use "or" for alternatives: "Calls get_nfts or get_nfts_by_address"
+- Include negative checks: "Does not send a real transaction"
+- Cover process (tool calls) and result (response content)
 
 ## Adding evals
 
-1. Add a new entry to `tests/evals/evals.json` with a unique `id`
-2. Run `/skill-creator evaluate ton` to test it
-3. Review the grading in the viewer — refine expectations if too easy or too strict
+1. Add a new entry to the appropriate `evals/<skill-name>.json`
+2. Also add it to `evals/evals.json` (combined file)
+3. Run `/skill-creator evaluate <skill-name>` to test it
+4. Review the grading in the viewer — refine expectations if too easy or too strict
 
-## Test coverage
+## Troubleshooting
 
-The 32 evals cover 9 skill groups:
-
-| Group | Evals | IDs | Description |
-|---|---|---|---|
-| ton-balance | 5 | 1–5 | Balances, tokens, transactions |
-| ton-manage-wallets | 3 | 6–8 | Wallet list, active wallet, validation |
-| ton-swap | 4 | 9–12 | Quotes, swaps, error handling |
-| ton-xstocks | 4 | 13–16 | xStock prices, buy, sell |
-| ton-send | 3 | 17–19 | DNS, TON transfers, jetton transfers |
-| ton-nfts | 3 | 20–22 | NFT list, details, feed |
-| ton-docs | 3 | 23–25 | Jettons, wallets, NFT standards |
-| ton-cli | 3 | 26–28 | CLI balance, wallets, transactions |
-| cross-skill | 4 | 29–32 | Portfolio value, multi-step operations |
+| Problem | Fix |
+|---|---|
+| Subagents can't use MCP tools | `claude mcp list` must show `ton-mcp` and `ton-docs`. Run from `tests/` where `.mcp.json` lives. |
+| MCP tools not found | Make sure you launched Claude Code from `tests/`, not the repo root. MCP is configured in `tests/.mcp.json`. |
+| "No wallet configured" | `npx @ton/mcp@alpha get_wallet`. Create with `ton-create-wallet` skill if missing. |
+| Swap evals fail with "no quote" | Omniston has no route. Retry in a few minutes. |
+| Send evals fail | Need ≥ 0.5 TON for gas. Top up. |
+| `result.json` is 0 bytes | `claude -p` crashed or timed out. Re-run that eval. |

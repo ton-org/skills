@@ -1,0 +1,45 @@
+{
+  "skill_name": "ton-xstocks",
+  "evals": [
+    {
+      "id": 13,
+      "group": "ton-xstocks",
+      "prompt": "How much is the NVDAx stock token worth in USDT?",
+      "expected_output": "Shows NVDAx price in USDT",
+      "expectations": [
+        "Calls get_swap_quote or get_jetton_info",
+        "Response contains a numeric price"
+      ]
+    },
+    {
+      "id": 14,
+      "group": "ton-xstocks",
+      "prompt": "Show me my NVDAx balance",
+      "expected_output": "Shows NVDAx token balance",
+      "expectations": [
+        "Calls get_jetton_balance or get_jettons",
+        "Response contains NVDAx amount"
+      ]
+    },
+    {
+      "id": 15,
+      "group": "ton-xstocks",
+      "prompt": "Buy a small amount of TSLAx",
+      "expected_output": "Attempts to buy TSLAx, possibly via two-step swap through USDT",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Response shows purchase result or explains the route"
+      ]
+    },
+    {
+      "id": 16,
+      "group": "ton-xstocks",
+      "prompt": "Sell my NVDAx",
+      "expected_output": "Attempts to sell NVDAx holdings",
+      "expectations": [
+        "Calls get_swap_quote or get_jetton_balance",
+        "Response shows sell result or quote"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "skill_name": "ton-balance",
+  "evals": [
+    {
+      "id": 1,
+      "group": "ton-balance",
+      "prompt": "How much TON do I have?",
+      "expected_output": "Shows the user's TON balance as a numeric amount",
+      "expectations": [
+        "Calls get_balance or get_balance_by_address",
+        "Response contains a numeric TON amount",
+        "Does not hallucinate a wallet address"
+      ]
+    },
+    {
+      "id": 2,
+      "group": "ton-balance",
+      "prompt": "Show me all the tokens in my wallet",
+      "expected_output": "Lists all jetton balances in the wallet",
+      "expectations": [
+        "Calls get_jettons or get_jettons_by_address",
+        "Response lists token names and balances"
+      ]
+    },
+    {
+      "id": 3,
+      "group": "ton-balance",
+      "prompt": "What's my USDT balance?",
+      "expected_output": "Shows USDT balance specifically",
+      "expectations": [
+        "Calls get_jetton_balance or get_jettons",
+        "Response contains a numeric USDT amount"
+      ]
+    },
+    {
+      "id": 4,
+      "group": "ton-balance",
+      "prompt": "Show me my last 5 transactions",
+      "expected_output": "Lists recent transactions with details",
+      "expectations": [
+        "Calls get_transactions",
+        "Response shows transaction details"
+      ]
+    },
+    {
+      "id": 5,
+      "group": "ton-balance",
+      "prompt": "What is the status of my most recent transaction?",
+      "expected_output": "Shows status of the latest transaction",
+      "expectations": [
+        "Calls get_transactions or get_transaction_status",
+        "Response includes transaction status"
+      ]
+    }
+  ]
+}

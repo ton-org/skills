@@ -92,9 +92,7 @@ Authoring rules and quality checklist: [AGENTS.md](AGENTS.md).
 
 ## Testing
 
-Evals are run via the [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) Claude Code plugin. Setup, commands (`/skill-creator evaluate`, `benchmark`, `improve`), and the eval format are documented in [tests/TESTING.md](tests/TESTING.md). Aggregated metrics from each benchmark are logged in [tests/RESULTS.md](tests/RESULTS.md) (date, model, per-eval times/tokens, aggregate stats with Wins / Losses / Ties).
-
-Eval definitions live in [`tests/evals/evals.json`](tests/evals/evals.json). When adding a new skill, update evals and the test coverage table — see [CONTRIBUTE.md § Adding a new skill](CONTRIBUTE.md#adding-a-new-skill). For the underlying authoring methodology, see [AGENTS.md § Evaluating and Iterating on Skills](AGENTS.md#evaluating-and-iterating-on-skills).
+Setup, commands, and eval format: [tests/TESTING.md](tests/TESTING.md). Aggregated benchmark metrics: [tests/RESULTS.md](tests/RESULTS.md).
 
 ## License
 

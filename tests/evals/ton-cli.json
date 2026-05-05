@@ -1,0 +1,35 @@
+{
+  "skill_name": "ton-cli",
+  "evals": [
+    {
+      "id": 26,
+      "group": "ton-cli",
+      "prompt": "Check my TON balance via CLI",
+      "expected_output": "Runs TON MCP CLI command to check balance",
+      "expectations": [
+        "Uses Bash to run npx @ton/mcp or calls get_balance",
+        "Response shows a TON balance"
+      ]
+    },
+    {
+      "id": 27,
+      "group": "ton-cli",
+      "prompt": "List my wallets via CLI",
+      "expected_output": "Runs TON MCP CLI command to list wallets",
+      "expectations": [
+        "Uses Bash to run npx @ton/mcp or calls list_wallets",
+        "Response shows wallet list"
+      ]
+    },
+    {
+      "id": 28,
+      "group": "ton-cli",
+      "prompt": "Show my recent transactions via CLI",
+      "expected_output": "Runs TON MCP CLI command to show transactions",
+      "expectations": [
+        "Uses Bash to run npx @ton/mcp or calls get_transactions",
+        "Response shows transaction list"
+      ]
+    }
+  ]
+}

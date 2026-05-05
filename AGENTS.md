@@ -2,7 +2,7 @@
 
 Guidelines for creating and maintaining skills in this repository. Based on the [Agent Skills specification](https://agentskills.io/specification) and [best practices](https://agentskills.io/skill-creation/best-practices).
 
-For a map of published skills and install commands, see [README.md](README.md). For **where** skills may live in this repo (group folders, second level, no nesting) and what to update when adding a new skill, see [CONTRIBUTE.md](CONTRIBUTE.md). For **repository-wide end-to-end evaluations** via the skill-creator plugin (setup, commands, eval format), see [tests/TESTING.md](tests/TESTING.md); aggregated benchmark metrics live in [tests/RESULTS.md](tests/RESULTS.md) and the eval definitions in [tests/evals/evals.json](tests/evals/evals.json).
+For a map of published skills and install commands, see [README.md](README.md). For **where** skills may live in this repo (group folders, second level, no nesting) and what to update when adding a new skill, see [CONTRIBUTE.md](CONTRIBUTE.md). For **end-to-end evaluations** (setup, commands, eval format, results), see [tests/TESTING.md](tests/TESTING.md).
 
 ## Repository layout
 
@@ -494,7 +494,7 @@ Error: --format must be one of: json, csv, table.
 
 ### Repository-wide E2E runs
 
-End-to-end evaluations run via the [skill-creator](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator) plugin against [tests/evals/evals.json](tests/evals/evals.json); see [tests/TESTING.md](tests/TESTING.md) for setup and commands. Benchmark metrics are committed to [tests/RESULTS.md](tests/RESULTS.md) (date, model, per-eval times/tokens, aggregate stats with Wins / Losses / Ties). The methodology below complements that flow — use it when designing or tightening eval cases for a single skill.
+For setup, commands, eval format, and the per-skill eval files, see [tests/TESTING.md](tests/TESTING.md); aggregated metrics are committed to [tests/RESULTS.md](tests/RESULTS.md). The methodology below complements that flow — use it when designing or tightening eval cases for a single skill.
 
 ### Build Evaluations First
 
@@ -508,26 +508,7 @@ Create evaluations BEFORE writing extensive documentation. This ensures your ski
 
 ### Test Case Structure
 
-Store test cases in `tests/evals/evals.json` (single file shared by all skills in the repo, partitioned by `group`):
-
-```json
-{
-  "skill_name": "ton",
-  "evals": [
-    {
-      "id": 1,
-      "group": "ton-balance",
-      "prompt": "What's my TON balance and do I have any USDT?",
-      "expected_output": "TON balance and USDT jetton balance displayed.",
-      "expectations": [
-        "Calls get_balance to check TON balance",
-        "Calls get_known_jettons or get_jetton_balance for USDT",
-        "Displays both balances in human-readable format"
-      ]
-    }
-  ]
-}
-```
+For where eval files live and the JSON schema, see [tests/TESTING.md § Eval format](tests/TESTING.md#eval-format).
 
 ### Writing Good Expectations
 
