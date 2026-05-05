@@ -22,6 +22,15 @@ Examples:
 
 Keeping skills at the second level makes discovery predictable for install tooling and keeps navigation in the repo consistent.
 
+## Adding a new skill
+
+When you add a new skill at `<group>/<skill-name>/`, also:
+
+1. **`README.md` § Available skills** — add a row for the skill under its group.
+2. **Evals & benchmark** — wire the skill into evals, run them, and log aggregated metrics. See [tests/TESTING.md](tests/TESTING.md).
+
+If the new skill needs a brand-new group folder (e.g. `defi/`), also create `<group>/metadata.json` if shared metadata is required and follow the layout rules in the previous section.
+
 ## Testing
 
-Repository-wide end-to-end test prompts, rules, and metrics live under [tests/TESTING.md](tests/TESTING.md). Aggregated outcomes are logged in [tests/RESULTS.md](tests/RESULTS.md). These files are **not** skills; they document how maintainers run and record autonomous agent tests. For small per-skill eval JSON examples, see [AGENTS.md](AGENTS.md#evaluating-and-iterating-on-skills).
+See [tests/TESTING.md](tests/TESTING.md). Aggregated metrics: [tests/RESULTS.md](tests/RESULTS.md).

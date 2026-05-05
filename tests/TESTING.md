@@ -1,153 +1,278 @@
-# Autonomous Testing Plan — TON Skills
+# Testing — TON Skills
 
-## Goal
+## Quick start
 
-Run all skill test cases end-to-end autonomously, discovering and recording issues in `ISSUES.md` without waiting for user approval on each step.
-
-`ISSUES.md` is a **temporary** working file for a given run or session: it is not a permanent artifact in the repo. After triage, move findings to your issue tracker or PR and clear or remove the file.
-
-## Setup — reinstall skills before each run
-
-Always reinstall skills from this local repo before running tests. This ensures you are testing the current source, not any globally cached version.
+Open Claude Code **from the `tests/` directory** (not the repo root):
 
 ```bash
-# From the repo root
-npx skills add . --skill '*'
+cd tests
+claude
 ```
 
-## Permissions
+MCP servers (`ton-mcp`, `ton-docs`) are configured in `tests/.mcp.json` and will be picked up automatically. Eval files, workspace, and results all live here too.
 
-All read-only and emulation operations are pre-approved. For write operations:
-- **Prefer emulation** — use `emulate_transaction` instead of `send_raw_transaction` wherever possible
-- **Only send real transactions** when emulation is not available or the test case explicitly requires on-chain confirmation (e.g. verifying a tx hash via `get_transaction_status`)
-- Balance reads, jetton reads, quote fetches, DNS resolution, NFT reads — all pre-approved
-- Smart contract reads and validations — pre-approved
-
-
-## Execution Rules
-
-- **Exhaust all options before marking a case failed.** If a tool call errors, try alternative tools, different parameters, or fallback approaches. Each retry counts toward the actions and errors totals.
-- Only mark a case `✗` after genuinely exhausting all reasonable paths. The goal is to complete the task, not to skip it.
-- **BLOCKED** is only valid when a case is structurally impossible without a prior result (e.g. B5 needs a tx hash from B4) and no workaround exists.
-- Complete all groups regardless of failure count — a failed case never stops the run.
-
-## Issue Recording Format
-
-When a new issue is found, append to `ISSUES.md` under the relevant section:
+Run evals per skill:
 
 ```
-### [CATEGORY-N] Short title
-**Affects:** skill name
-**Tools:** tool names
-**Description:** what went wrong
-**Fix:** proposed fix
-**Status:** discovered / documented / fixed
-**Triggered by:** exact request or tool call that exposed the issue
+/skill-creator evaluate ton-balance
+/skill-creator evaluate ton-swap
+/skill-creator evaluate ton-send
+/skill-creator evaluate ton-nfts
+/skill-creator evaluate ton-docs
+/skill-creator evaluate ton-cli
+/skill-creator evaluate ton-xstocks
+/skill-creator evaluate ton-manage-wallets
+/skill-creator evaluate cross-skill
 ```
 
-## Test Cases
+Each command reads the corresponding `evals/<skill-name>.json`, runs evals with and without the skill, grades expectations, aggregates results, and opens the HTML viewer.
 
-### GROUP 1: ton-balance
-- [ ] B1 — "How much TON do I have?"
-- [ ] B2 — "Show me all the tokens in my wallet"
-- [ ] B3 — "What's my USDT balance?"
-- [ ] B4 — "Show me my last 5 transactions"
-- [ ] B5 — "What is the status of my most recent transaction?"
+To run **all skills at once**, ask Claude:
 
-### GROUP 2: ton-manage-wallets
-- [ ] W1 — "List all my wallets"
-- [ ] W2 — "Which wallet am I currently using?"
-- [ ] W3 — "Is my active wallet properly set up and valid?"
+```
+/skill-creator evaluate ton-*
+```
 
-### GROUP 3: ton-swap
-- [ ] S1 — "How much USDT would I get for 1 TON right now?"
-- [ ] S2 — "Swap 0.5 TON to USDT"
-- [ ] S3 — "Swap USDT back to TON" *(if balance allows)*
-- [ ] S4 — "Get me a quote for swapping an unknown token address" *(expect graceful error)*
+## Before running evals — preflight check
 
-### GROUP 4: ton-xstocks
-- [ ] X1 — "How much is the NVDAx stock token worth in USDT?"
-- [ ] X2 — "Show me my NVDAx balance"
-- [ ] X3 — "Buy a small amount of TSLAx"
-- [ ] X4 — "Sell my NVDAx" *(if balance allows)*
+Before running any `/skill-creator evaluate` command, **always run a preflight check first**. This takes seconds and prevents wasting tokens on broken setups.
 
-### GROUP 5: ton-send
-- [ ] T1 — "What address does foundation.ton resolve to?"
-- [ ] T2 — "Send 0.01 TON to my own address"
-- [ ] T3 — "Send a small amount of USDT to myself"
+Run these MCP calls to verify the environment is working:
 
-### GROUP 6: ton-nfts
-- [ ] N1 — "Do I own any NFTs?"
-- [ ] N2 — "Show me details for a specific NFT" *(pick address from N2 results)*
-- [ ] N3 — "What's new in the NFT feed right now?"
+1. **MCP connected?** — Call `mcp__ton-mcp__get_wallet`. If this fails, MCP is not connected. The user needs to restart Claude Code from `tests/` where `.mcp.json` is configured.
 
-### GROUP 7: ton-docs
-- [ ] D1 — "How does jetton transfer work on TON?"
-- [ ] D2 — "Explain the TON wallet contract standard"
-- [ ] D3 — "What is the NFT standard on TON and how does ownership transfer?"
+2. **Wallet has funds?** — Call `mcp__ton-mcp__get_balance`. Must show >= 0.5 TON. If zero or error, the wallet is not set up.
 
-### GROUP 8: ton-cli
-- [ ] C1 — "Check my TON balance via CLI"
-- [ ] C2 — "List my wallets via CLI"
-- [ ] C3 — "Show my recent transactions via CLI"
+3. **Jettons available?** — Call `mcp__ton-mcp__get_jettons`. Should show USDT. Missing tokens will cause some evals to fail.
 
-### GROUP 9: cross-skill
-*These cases intentionally span multiple skills. Note which skills were invoked in `ISSUES.md` if relevant.*
+4. **TON Docs MCP connected?** — Call `mcp__ton-docs__search_ton_docs` with a simple query like "jetton". If this fails, the ton-docs server is down or not connected.
 
-- [ ] M1 — "What's my total portfolio value in USD?" *(ton-balance + ton-xstocks: balance + current token prices)*
-- [ ] M2 — "Buy NVDAx worth 1 USDT, paying with TON" *(ton-balance + ton-swap + ton-xstocks)*
-- [ ] M3 — "How much TON do I need to buy 1 TSLAx at current prices?" *(ton-xstocks + ton-swap: quote only, no execution)*
-- [ ] M4 — "Check my balance, then show me what NFTs I own and look one up on GetGems" *(ton-balance + ton-nfts)*
+If any check fails, **stop and tell the user** what's wrong instead of launching dozens of agents that will all fail.
 
-## Issue Severity
+## Eval files
 
-- **P0** — blocks the skill entirely
-- **P1** — wrong result or silent failure
-- **P2** — missing documentation / unclear behavior
-- **P3** — nice-to-have improvement
+Each skill has its own eval file in `evals/`:
 
-## Metrics
+| File | Skill | Evals | IDs |
+|------|-------|-------|-----|
+| `ton-balance.json` | ton-balance | 5 | 1-5 |
+| `ton-manage-wallets.json` | ton-manage-wallets | 3 | 6-8 |
+| `ton-swap.json` | ton-swap | 4 | 9-12 |
+| `ton-xstocks.json` | ton-xstocks | 4 | 13-16 |
+| `ton-send.json` | ton-send | 3 | 17-19 |
+| `ton-nfts.json` | ton-nfts | 3 | 20-22 |
+| `ton-docs.json` | ton-docs | 3 | 23-25 |
+| `ton-cli.json` | ton-cli | 3 | 26-28 |
+| `cross-skill.json` | cross-skill | 4 | 29-32 |
 
-Track the following counters for every test run. Update `RESULTS.md` after completing all groups.
+`evals.json` is the combined file with all 32 evals (kept for backwards compatibility).
 
-| Metric | Definition |
+## Skill paths
+
+| Skill | Path |
+|-------|------|
+| ton-balance | `wallets/ton-balance` |
+| ton-manage-wallets | `wallets/ton-manage-wallets` |
+| ton-swap | `wallets/ton-swap` |
+| ton-xstocks | `wallets/ton-xstocks` |
+| ton-send | `wallets/ton-send` |
+| ton-nfts | `wallets/ton-nfts` |
+| ton-cli | `wallets/ton-cli` |
+| ton-create-wallet | `wallets/ton-create-wallet` |
+| ton-docs | `docs/ton-docs` |
+
+## Prerequisites
+
+### Wallet
+
+Evals run against a **real wallet on mainnet**. The active wallet (`~/.config/ton/config.json`) must have:
+
+| Asset | Min amount | Used by skills |
+|-------|-----------|----------------|
+| TON | ≥ 0.5 | ton-balance, ton-swap, ton-send, cross-skill (gas) |
+| USDT | any > 0 | ton-swap (reverse), ton-send (jetton) |
+
+The wallet must be **agentic** with an `operator_private_key`. Without it, write operations (swaps, sends) will fail.
+
+### Bootstrap wallet
+
+If starting from a wallet with only TON (need ≥ 1 TON), just ask Claude:
+
+```
+Swap 0.5 TON to USDT
+```
+
+Or manually:
+
+```bash
+npx @ton/mcp@alpha get_wallet
+npx @ton/mcp@alpha get_balance
+
+# TON → USDT
+npx @ton/mcp@alpha get_swap_quote --fromToken TON --toToken EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs --amount 0.5
+npx @ton/mcp@alpha send_raw_transaction --messages '<messages from quote>'
+
+npx @ton/mcp@alpha get_balance
+npx @ton/mcp@alpha get_jettons
+```
+
+**Key addresses:**
+
+| Token | Jetton master |
+|-------|--------------|
+| USDT | `EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs` |
+
+### Software
+
+```bash
+# 1. Claude Code
+npm install -g @anthropic-ai/claude-code
+
+# 2. skill-creator plugin
+claude plugin install skill-creator
+
+# 3. Clone and install skills
+git clone https://github.com/ton-org/skills.git
+cd skills
+npx skills add . --skill '*' -y
+
+# 4. Python 3.10+ (required for the eval viewer)
+brew install python@3.11
+```
+
+### MCP servers
+
+MCP servers are configured in **`tests/.mcp.json`** (not the repo root). Claude Code picks them up when launched from the `tests/` directory:
+
+```json
+{
+  "mcpServers": {
+    "ton-mcp": {
+      "command": "npx",
+      "args": ["-y", "@ton/mcp@alpha"]
+    },
+    "ton-docs": {
+      "type": "http",
+      "url": "https://docs.ton.org/mcp"
+    }
+  }
+}
+```
+
+Verify they're connected:
+
+```bash
+cd tests && claude mcp list
+# Should show ton-mcp and ton-docs
+```
+
+### Permissions
+
+Evals run via `claude -p` (non-interactive mode), so all tools must be **pre-approved** — there's no user to click "Allow". Add the following to `tests/.claude/settings.local.json` (create if it doesn't exist):
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "mcp__ton-mcp__*",
+      "mcp__ton-docs__*",
+      "Bash(npx @ton/mcp@alpha:*)",
+      "Bash(npx -y @ton/mcp@alpha:*)",
+      "Bash(curl:*)",
+      "WebFetch(*)",
+      "WebSearch(*)"
+    ]
+  }
+}
+```
+
+Without these, most evals will fail with "needs your approval" because:
+- `mcp__ton-mcp__*` / `mcp__ton-docs__*` — allow all MCP tool calls
+- `Bash(npx @ton/mcp@alpha:*)` — some skills route through CLI instead of MCP tools
+- `Bash(curl:*)` — xStocks evals fetch prices from the xStocks API
+- `WebFetch` / `WebSearch` — ton-docs evals may fetch documentation pages
+
+## Benchmark mode
+
+For statistical reliability, run multiple times:
+
+```
+/skill-creator benchmark ton-balance --runs 3
+```
+
+## Comparing skill versions
+
+After editing a skill:
+
+```
+/skill-creator improve ton-swap
+```
+
+Compares the current version against the previous best using blind A/B comparison.
+
+## Recording results
+
+The plugin writes temp files (`grading.json`, `benchmark.json`, `benchmark.md`) into `ton-workspace/`. These are gitignored.
+
+After a benchmark run, append a new dated section to `RESULTS.md` manually with:
+
+- Date heading and model
+- Per-eval table: eval, group, with-skill time/tokens, without-skill time/tokens, winner
+- Aggregate stats: avg time, avg total tokens, pass rate, winner breakdown (Wins / Losses / Ties)
+
+No prose, no assertion tables, no raw JSON in `RESULTS.md`.
+
+## Eval format
+
+```json
+{
+  "skill_name": "ton-balance",
+  "evals": [
+    {
+      "id": 1,
+      "group": "ton-balance",
+      "prompt": "How much TON do I have?",
+      "expected_output": "Shows the user's TON balance as a numeric amount",
+      "expectations": [
+        "Calls get_balance or get_balance_by_address",
+        "Response contains a numeric TON amount",
+        "Does not hallucinate a wallet address"
+      ]
+    }
+  ]
+}
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `id` | yes | Unique integer |
+| `group` | no | Skill group for organizing results |
+| `prompt` | yes | The user request to execute |
+| `expected_output` | yes | Human-readable description of success |
+| `expectations` | yes | List of verifiable assertions for the grader |
+| `files` | no | Input files for the eval (relative to skill root) |
+
+### Writing good expectations
+
+- Be specific: "Calls get_balance" not "Uses the right tool"
+- Use "or" for alternatives: "Calls get_nfts or get_nfts_by_address"
+- Include negative checks: "Does not send a real transaction"
+- Cover process (tool calls) and result (response content)
+
+## Adding evals
+
+1. Add a new entry to the appropriate `evals/<skill-name>.json`
+2. Also add it to `evals/evals.json` (combined file)
+3. Run `/skill-creator evaluate <skill-name>` to test it
+4. Review the grading in the viewer — refine expectations if too easy or too strict
+
+## Troubleshooting
+
+| Problem | Fix |
 |---|---|
-| **Errors** | Total number of tool calls that returned an error (MCP errors, validation failures, unexpected exceptions) |
-| **Actions** | Total number of tool calls made across all groups (each MCP tool invocation counts as 1) |
-| **Context** | Estimated context window consumed, in tokens (approximate, e.g. `~42 000 tok`) |
-
-### How to count
-
-- **Errors** — increment for every response that contains `MCP error`, `error:`, `failed`, or a non-success status. Count each failed tool call once.
-- **Actions** — increment for every tool call dispatched, regardless of outcome (success or error).
-- **Context** — after all groups are done, estimate from the conversation length. Use `~N k tok` format.
-- **Notes column is removed** — all findings go to `ISSUES.md`, not the results table.
-
-### Δ (delta) vs previous run
-
-After filling in the numbers, compute the percentage change vs the previous run for each metric:
-
-```
-Δ = round((current - previous) / previous * 100)  →  "+N %" / "-N %"
-```
-
-**Tolerance rule — deviations within ±5 % are normal and expected.**  
-Agents are non-deterministic: they may retry a step, pick a slightly different tool order, or produce a longer/shorter response. A swing of a few percent in actions or context does **not** indicate a regression. Only flag deviations that exceed ±5 % as worth investigating.
-
-## Output
-
-After each group:
-1. Update `ISSUES.md` with any new findings.
-2. Fill in the per-test-case rows for that group in `RESULTS.md` (status, errors, actions — no Notes column).
-3. Fill in the group totals row in `RESULTS.md`.
-
-After all groups are done:
-4. Compute Δ columns for errors, actions, and context vs the previous run.
-5. Add a new row to the **Summary Table** in `RESULTS.md`.
-6. If any metric differs from the previous run by more than ±5 %, note it in `ISSUES.md` or a short comment in the PR for further review.
-
-### RESULTS.md format
-
-The **PR** column is the PR title and number, e.g. `#15`. If the current HEAD is not tied to a PR, use the branch name in that column instead.
-
-Then add or update the entry in `RESULTS.md` following the template in that file.
+| Subagents can't use MCP tools | `claude mcp list` must show `ton-mcp` and `ton-docs`. Run from `tests/` where `.mcp.json` lives. |
+| MCP tools not found | Make sure you launched Claude Code from `tests/`, not the repo root. MCP is configured in `tests/.mcp.json`. |
+| "No wallet configured" | `npx @ton/mcp@alpha get_wallet`. Create with `ton-create-wallet` skill if missing. |
+| Swap evals fail with "no quote" | Omniston has no route. Retry in a few minutes. |
+| Send evals fail | Need ≥ 0.5 TON for gas. Top up. |
+| `result.json` is 0 bytes | `claude -p` crashed or timed out. Re-run that eval. |

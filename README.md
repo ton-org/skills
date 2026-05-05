@@ -17,7 +17,7 @@ docs/
 
 Do not nest skills inside another skill directory; see [CONTRIBUTE.md](CONTRIBUTE.md). Optional `metadata.json` may live next to a group (e.g. `wallets/metadata.json`).
 
-The **`tests/`** folder at the repo root is not an installable skill; it holds the [autonomous testing plan](tests/TESTING.md) and [aggregated run results](tests/RESULTS.md).
+The **`tests/`** folder at the repo root is not an installable skill; it holds the [testing setup](tests/TESTING.md), [aggregated benchmark metrics](tests/RESULTS.md), and the [eval definitions](tests/evals/evals.json) consumed by the skill-creator plugin.
 
 ## Available skills
 
@@ -92,15 +92,7 @@ Authoring rules and quality checklist: [AGENTS.md](AGENTS.md).
 
 ## Testing
 
-End-to-end autonomous runs across wallet and docs skills are described in [tests/TESTING.md](tests/TESTING.md) (prompts, execution rules, metrics, and how to record issues). Summary tables and per-run deltas are in [tests/RESULTS.md](tests/RESULTS.md).
-
-Before a full run, reinstall skills from this checkout so the agent uses the current sources (not a stale global cache):
-
-```bash
-npx skills add . --skill '*'
-```
-
-Per-skill evaluation fixtures (`evals/evals.json`) and iteration guidance: [AGENTS.md](AGENTS.md#evaluating-and-iterating-on-skills).
+Setup, commands, and eval format: [tests/TESTING.md](tests/TESTING.md). Aggregated benchmark metrics: [tests/RESULTS.md](tests/RESULTS.md).
 
 ## License
 
