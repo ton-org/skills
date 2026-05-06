@@ -1,0 +1,49 @@
+{
+  "skill_name": "ton-swap",
+  "evals": [
+    {
+      "id": 9,
+      "group": "ton-swap",
+      "prompt": "How much USDT would I get for 1 TON right now?",
+      "expected_output": "Shows a swap quote for TON to USDT",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Response contains a numeric USDT amount"
+      ]
+    },
+    {
+      "id": 10,
+      "group": "ton-swap",
+      "prompt": "Swap 0.5 TON to USDT",
+      "expected_output": "Executes a TON to USDT swap with emulation before sending",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Calls emulate_transaction before sending",
+        "Calls send_raw_transaction",
+        "Response confirms the swap result"
+      ]
+    },
+    {
+      "id": 11,
+      "group": "ton-swap",
+      "prompt": "Swap USDT back to TON",
+      "expected_output": "Executes a USDT to TON swap with emulation before sending",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Calls emulate_transaction before sending",
+        "Calls send_raw_transaction",
+        "Response confirms the swap result"
+      ]
+    },
+    {
+      "id": 12,
+      "group": "ton-swap",
+      "prompt": "Get me a quote for swapping an unknown token address",
+      "expected_output": "Handles the error gracefully",
+      "expectations": [
+        "Does not crash or hang",
+        "Response explains the token was not found or quote unavailable"
+      ]
+    }
+  ]
+}

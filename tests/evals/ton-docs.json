@@ -1,0 +1,35 @@
+{
+  "skill_name": "ton-docs",
+  "evals": [
+    {
+      "id": 23,
+      "group": "ton-docs",
+      "prompt": "How does jetton transfer work on TON?",
+      "expected_output": "Explains jetton transfer mechanics using documentation",
+      "expectations": [
+        "Calls search_ton_docs or query_docs_filesystem_ton_docs",
+        "Response explains jetton transfer with technical details"
+      ]
+    },
+    {
+      "id": 24,
+      "group": "ton-docs",
+      "prompt": "Explain the TON wallet contract standard",
+      "expected_output": "Explains wallet contract standards",
+      "expectations": [
+        "Calls search_ton_docs or query_docs_filesystem_ton_docs",
+        "Response covers wallet contract versioning or standards"
+      ]
+    },
+    {
+      "id": 25,
+      "group": "ton-docs",
+      "prompt": "What is the NFT standard on TON and how does ownership transfer?",
+      "expected_output": "Explains TON NFT standard and transfer mechanism",
+      "expectations": [
+        "Calls search_ton_docs or query_docs_filesystem_ton_docs",
+        "Response references TEP-62 or NFT standard details"
+      ]
+    }
+  ]
+}

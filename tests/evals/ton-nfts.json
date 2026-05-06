@@ -1,0 +1,35 @@
+{
+  "skill_name": "ton-nfts",
+  "evals": [
+    {
+      "id": 20,
+      "group": "ton-nfts",
+      "prompt": "Do I own any NFTs?",
+      "expected_output": "Lists NFTs owned by the user",
+      "expectations": [
+        "Calls get_nfts or get_nfts_by_address",
+        "Response lists NFTs or says none found"
+      ]
+    },
+    {
+      "id": 21,
+      "group": "ton-nfts",
+      "prompt": "Show me details for a specific NFT",
+      "expected_output": "Shows details of an NFT",
+      "expectations": [
+        "Calls get_nft or get_nfts",
+        "Response contains NFT metadata"
+      ]
+    },
+    {
+      "id": 22,
+      "group": "ton-nfts",
+      "prompt": "What's new in the NFT feed right now?",
+      "expected_output": "Attempts to show NFT feed or explains limitation",
+      "expectations": [
+        "Does not crash or hang",
+        "Response addresses the request or explains no feed tool exists"
+      ]
+    }
+  ]
+}

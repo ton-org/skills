@@ -1,0 +1,46 @@
+{
+  "skill_name": "cross-skill",
+  "evals": [
+    {
+      "id": 29,
+      "group": "cross-skill",
+      "prompt": "What's my total portfolio value in USD?",
+      "expected_output": "Calculates total portfolio value across TON and tokens",
+      "expectations": [
+        "Calls get_balance and get_jettons",
+        "Response contains a total USD value"
+      ]
+    },
+    {
+      "id": 30,
+      "group": "cross-skill",
+      "prompt": "Buy NVDAx worth 1 USDT, paying with TON",
+      "expected_output": "Performs multi-step swap: TON -> USDT -> NVDAx",
+      "expectations": [
+        "Calls get_swap_quote at least once",
+        "Response shows purchase result or explains the multi-step route"
+      ]
+    },
+    {
+      "id": 31,
+      "group": "cross-skill",
+      "prompt": "How much TON do I need to buy 1 TSLAx at current prices?",
+      "expected_output": "Calculates TON cost for 1 TSLAx",
+      "expectations": [
+        "Calls get_swap_quote",
+        "Response contains a numeric TON amount"
+      ]
+    },
+    {
+      "id": 32,
+      "group": "cross-skill",
+      "prompt": "Check my balance, then show me what NFTs I own and look one up on GetGems",
+      "expected_output": "Shows balance, lists NFTs, and looks up one on GetGems",
+      "expectations": [
+        "Calls get_balance or get_jettons",
+        "Calls get_nfts or get_nfts_by_address",
+        "Response covers balance and NFT information"
+      ]
+    }
+  ]
+}

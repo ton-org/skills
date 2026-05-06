@@ -3,3 +3,13 @@
 .env*.local
 node_modules
 .idea
+.agents/
+.claude/
+.windsurf
+
+ton-workspace/
+
+# skill-creator plugin temp output
+grading.json
+benchmark.json
+benchmark.md

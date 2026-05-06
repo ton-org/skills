@@ -1,0 +1,35 @@
+{
+  "skill_name": "ton-manage-wallets",
+  "evals": [
+    {
+      "id": 6,
+      "group": "ton-manage-wallets",
+      "prompt": "List all my wallets",
+      "expected_output": "Lists all wallets with addresses",
+      "expectations": [
+        "Calls list_wallets",
+        "Response contains wallet addresses"
+      ]
+    },
+    {
+      "id": 7,
+      "group": "ton-manage-wallets",
+      "prompt": "Which wallet am I currently using?",
+      "expected_output": "Shows the active wallet",
+      "expectations": [
+        "Calls get_current_wallet or get_wallet",
+        "Response identifies the active wallet"
+      ]
+    },
+    {
+      "id": 8,
+      "group": "ton-manage-wallets",
+      "prompt": "Is my active wallet properly set up and valid?",
+      "expected_output": "Validates the active wallet",
+      "expectations": [
+        "Calls agentic_validate_wallet or get_wallet",
+        "Response confirms validity or reports issues"
+      ]
+    }
+  ]
+}

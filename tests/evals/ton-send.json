@@ -1,0 +1,35 @@
+{
+  "skill_name": "ton-send",
+  "evals": [
+    {
+      "id": 17,
+      "group": "ton-send",
+      "prompt": "What address does foundation.ton resolve to?",
+      "expected_output": "Resolves the .ton domain to an address",
+      "expectations": [
+        "Calls resolve_dns",
+        "Response contains a TON address"
+      ]
+    },
+    {
+      "id": 18,
+      "group": "ton-send",
+      "prompt": "Send 0.01 TON to my own address",
+      "expected_output": "Sends TON to the user's own wallet",
+      "expectations": [
+        "Calls send_ton",
+        "Response confirms the send with a transaction hash"
+      ]
+    },
+    {
+      "id": 19,
+      "group": "ton-send",
+      "prompt": "Send a small amount of USDT to myself",
+      "expected_output": "Sends USDT jetton to the user's own wallet",
+      "expectations": [
+        "Calls send_jetton",
+        "Response confirms the send with a transaction hash"
+      ]
+    }
+  ]
+}
